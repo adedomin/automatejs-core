@@ -1,0 +1,23 @@
+{
+  "name": "automatejs-core",
+  "version": "0.0.1",
+  "description": "core modules for automatejs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adedomin/automatejs-core.git"
+  },
+  "keywords": [
+    "automatejs",
+    "modules"
+  ],
+  "author": "Anthony DeDominic <anthony@dedominic.pw>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/adedomin/automatejs-core/issues"
+  },
+  "homepage": "https://github.com/adedomin/automatejs-core#readme"
+}
