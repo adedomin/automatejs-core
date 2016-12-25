@@ -22,12 +22,16 @@
 var fs = require('fs')
 
 module.exports = (tree, cb) => {
-    var file = fs.createReadStream(`${__dirname}/files/${tree.source}`)
-    try {
-        file.pipe(fs.createWriteStream(tree.destination))
+    var fpipe = fs.createReadStream(
+        `${__dirname}/files/${tree.source}`
+    ).pipe(
+        fs.createWriteStream(tree.destination)
+    ) 
+
+    fpipe.on('error', (err) => {
+        cb(err, { status: 'ERROR', exception: err })
+    })
+    fpipe.on('finish', () => {
         cb(null, { status: 'file copied' })
-    }
-    catch (e) {
-        cb(e, { status: 'failed to copy', exception: e })
-    }
+    })
 }
