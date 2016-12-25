@@ -22,13 +22,34 @@
 var fs = require('fs')
 
 module.exports = (tree, cb) => {
-    var template = require(`./${__dirname}/templates/${tree.source}`)(tree.variables)
+    var template, filestream
+
     try {
-        fs.createWriteStream(tree.destination).write(template)
-        cb(null, { status: `file written to ${tree.destination}` })
+        template = require(
+            `./${__dirname}/templates/${tree.source}`
+        )(tree.variables)
     }
-    catch (e) {
-        cb(e, { status: 'failed to write', exception: e })
+    catch (err) {
+        return cb(err, {
+            status: 'failed to template, may be a syntax error',
+            exception: err
+        })
     }
+
+    filestream = fs.createWriteStream(tree.destination).write(template)
+    
+    filestream.on('error', (err) => {
+        cb(err, {
+            status: 'failed to write file',
+            exception: err
+        })
+    })
+
+    filestream.on('finish', () => {
+        cb(null, {
+            status: 'file teplated and written to destination without issue',
+            destination: tree.destination
+        })
+    })
     
 }
