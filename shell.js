@@ -19,7 +19,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-var spawn = require('child_process').spawn
+var spawn = require('child_process').exec
 
 module.exports = (args, cb) => {
 
@@ -32,7 +32,7 @@ module.exports = (args, cb) => {
     })
     if (args.timeout) timeout = args.timeout 
 
-    var cmd = spawn(args.command, [], { shell: true })
+    var cmd = spawn(args.command)
     var timeout_timer = setTimeout(() => {
         timedout = true
         cmd.kill()
