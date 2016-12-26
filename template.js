@@ -20,7 +20,7 @@
  */
 
 var fs = require('fs'),
-    path = require('path')
+    path = require('path').join
 
 module.exports = (tree, cb) => {
     var template, filestream
