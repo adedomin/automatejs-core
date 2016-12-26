@@ -19,11 +19,12 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-var fs = require('fs')
+var fs = require('fs'),
+    path = require('path')
 
 module.exports = (tree, cb) => {
     var fpipe = fs.createReadStream(
-        `${__dirname}/files/${tree.source}`
+        path(__dirname, 'files', tree.source)
     ).pipe(
         fs.createWriteStream(tree.destination)
     ) 

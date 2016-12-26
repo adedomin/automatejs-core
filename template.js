@@ -19,14 +19,15 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-var fs = require('fs')
+var fs = require('fs'),
+    path = require('path')
 
 module.exports = (tree, cb) => {
     var template, filestream
 
     try {
         template = require(
-            `./${__dirname}/templates/${tree.source}`
+            path(__dirname, 'templates', tree.source)
         )(tree.variables)
     }
     catch (err) {
