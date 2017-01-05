@@ -35,7 +35,7 @@ module.exports = (tree, cb, template) => {
     }, (next) => {
         var fpipe
         if (template) {
-            template.pipe(
+            fpipe = template.pipe(
                 fs.createWriteStream(actualdest),
                 { mode: parseInt(tree.mode, 8) }
             )
