@@ -19,8 +19,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-var stream = require('stream').Readable,
-    fs = require('fs'),
+var fs = require('fs'),
     path = require('path'),
     mkdirp = require('mkdirp'),
     waterfall = require('async.waterfall')
@@ -39,20 +38,17 @@ module.exports = (tree, cb) => {
         })
     }
 
-    rstream = new stream()
-    rstream._read = () => {}
     rstream.push(template)
-    rstream.push(null)
 
     waterfall([(next) => {
         if (!tree.mkdir) return next()
         mkdirp(path.dirname(tree.destination), next)
     }, (next) => {
         var fpipe
-        fpipe = template.pipe(
-            fs.createWriteStream(tree.destination),
+        fpipe = fs.createWriteStream(
+            tree.destination,
             { mode: parseInt(tree.mode, 8) }
-        )
+        ).write(template)
         fpipe.on('error', next)
         fpipe.on('finish', next)
     }, (next) => {
