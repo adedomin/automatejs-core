@@ -20,11 +20,11 @@
  */
 
 var fs = require('fs'),
+    file = require('./file.js'),
     path = require('path').join
 
 module.exports = (tree, cb) => {
-    var template, filestream
-
+    var template
     try {
         template = require(
             path(__dirname, 'templates', tree.source)
@@ -36,21 +36,5 @@ module.exports = (tree, cb) => {
             exception: err
         })
     }
-
-    filestream = fs.createWriteStream(tree.destination).write(template)
-    
-    filestream.on('error', (err) => {
-        cb(err, {
-            status: 'failed to write file',
-            exception: err
-        })
-    })
-
-    filestream.on('finish', () => {
-        cb(null, {
-            status: 'file teplated and written to destination without issue',
-            destination: tree.destination
-        })
-    })
-    
+    file(tree, cb, fs.createWriteStream(tree.destination).write(template))
 }

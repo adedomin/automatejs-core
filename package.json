@@ -1,6 +1,6 @@
 {
   "name": "automatejs-core",
-  "version": "0.2.0",
+  "version": "1.0.0-RC1",
   "description": "core modules for automatejs",
   "main": "index.js",
   "scripts": {
@@ -19,5 +19,9 @@
   "bugs": {
     "url": "https://github.com/adedomin/automatejs-core/issues"
   },
-  "homepage": "https://github.com/adedomin/automatejs-core#readme"
+  "homepage": "https://github.com/adedomin/automatejs-core#readme",
+  "dependencies": {
+    "async.waterfall": "^0.5.2",
+    "mkdirp": "git+https://github.com/substack/node-mkdirp.git"
+  }
 }

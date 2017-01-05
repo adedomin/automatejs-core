@@ -20,19 +20,51 @@
  */
 
 var fs = require('fs'),
-    path = require('path').join
+    path = require('path'),
+    mkdirp = require('mkdirp'),
+    waterfall = require('async.waterfall')
 
-module.exports = (tree, cb) => {
-    var fpipe = fs.createReadStream(
-        path(__dirname, 'files', tree.source)
-    ).pipe(
-        fs.createWriteStream(tree.destination)
-    ) 
+module.exports = (tree, cb, template) => {
+    var actualdest = tree.destination
+    if (tree.destination.slice(-1) == '/')
+        actualdest = `${tree.destination}${path.basename(tree.source)}`
 
-    fpipe.on('error', (err) => {
-        cb(err, { status: 'ERROR', exception: err })
-    })
-    fpipe.on('finish', () => {
+    waterfall([(next) => {
+        if (!tree.mkdir) return next()
+        mkdirp(path.dirname(actualdest), next)
+    }, (next) => {
+        var fpipe
+        if (!tree.mode || !parseInt(tree.mode, 8)) {
+            fpipe = fs.createReadStream(
+                path.join(__dirname, 'files', tree.source)
+            ).pipe(
+                fs.createWriteStream(actualdest)
+            )
+        }
+        else if (template) {
+            template.pipe(
+                fs.createWriteStream(actualdest),
+                { mode: parseInt(tree.mode, 8) }
+            )
+        }
+        else {
+            fpipe = fs.createReadStream(
+                path.join(__dirname, 'files', tree.source)
+            ).pipe(
+                fs.createWriteStream(actualdest),
+                { mode: parseInt(tree.mode, 8) }
+            )
+        }
+        fpipe.on('error', next)
+        fpipe.on('finish', next)
+    }, (next) => {
+        if (!tree.owner) return next()
+        if (!+tree.owner) return next('must provide a uid, username is not supported')
+        fs.chown(actualdest, +tree.owner, 0, next)
+    }], (err) => {
+        if (err) cb(err, { status: 'ERROR', exception: err })
         cb(null, { status: 'file copied' })
     })
+
+
 }
