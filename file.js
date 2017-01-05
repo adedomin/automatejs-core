@@ -24,7 +24,7 @@ var fs = require('fs'),
     mkdirp = require('mkdirp'),
     waterfall = require('async.waterfall')
 
-module.exports = (tree, cb, template) => {
+module.exports = (tree, cb) => {
     var actualdest = tree.destination
     if (tree.destination.slice(-1) == '/')
         actualdest = `${tree.destination}${path.basename(tree.source)}`
@@ -34,13 +34,7 @@ module.exports = (tree, cb, template) => {
         mkdirp(path.dirname(actualdest), next)
     }, (next) => {
         var fpipe
-        if (template) {
-            fpipe = template.pipe(
-                fs.createWriteStream(actualdest),
-                { mode: parseInt(tree.mode, 8) }
-            )
-        }
-        else if (!tree.mode || !parseInt(tree.mode, 8)) {
+        if (!tree.mode || !parseInt(tree.mode, 8)) {
             fpipe = fs.createReadStream(
                 path.join(__dirname, 'files', tree.source)
             ).pipe(

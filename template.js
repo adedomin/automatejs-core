@@ -20,14 +20,16 @@
  */
 
 var stream = require('stream').Readable,
-    file = require('./file.js'),
-    path = require('path').join
+    fs = require('fs'),
+    path = require('path'),
+    mkdirp = require('mkdirp'),
+    waterfall = require('async.waterfall')
 
 module.exports = (tree, cb) => {
     var template, rstream
     try {
         template = require(
-            path(__dirname, 'templates', tree.source)
+            path.join(__dirname, 'templates', tree.source)
         )(tree.variables)
     }
     catch (err) {
@@ -40,9 +42,25 @@ module.exports = (tree, cb) => {
     rstream = new stream()
     rstream._read = () => {}
     rstream.push(template)
-    rstream.push()
-    file(tree, (err) => {
-        if (err) return cb(err, { status: 'error', exception: err }) 
-        cb(null, { status: 'successfully wrote template to file' })
-    }, rstream)
+    rstream.push(null)
+
+    waterfall([(next) => {
+        if (!tree.mkdir) return next()
+        mkdirp(path.dirname(tree.destination), next)
+    }, (next) => {
+        var fpipe
+        fpipe = template.pipe(
+            fs.createWriteStream(tree.destination),
+            { mode: parseInt(tree.mode, 8) }
+        )
+        fpipe.on('error', next)
+        fpipe.on('finish', next)
+    }, (next) => {
+        if (!tree.owner) return next()
+        if (!+tree.owner) return next('must provide a uid, username is not supported')
+        fs.chown(tree.destination, +tree.owner, 0, next)
+    }], (err) => {
+        if (err) return cb(err, { status: 'ERROR', exception: err })
+        cb(null, { status: 'template written to file' })
+    })
 }
