@@ -62,7 +62,8 @@ module.exports = (tree, cb, template) => {
         if (!+tree.owner) return next('must provide a uid, username is not supported')
         fs.chown(actualdest, +tree.owner, 0, next)
     }], (err) => {
-        if (err) cb(err, { status: 'ERROR', exception: err })
+        if (err) return cb(err, { status: 'ERROR', exception: err })
+        if (template) return cb(null, { status: 'template ran and results written' })
         cb(null, { status: 'file copied' })
     })
 
