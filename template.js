@@ -19,12 +19,12 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-var fs = require('fs'),
+var stream = require('stream').Readable,
     file = require('./file.js'),
     path = require('path').join
 
 module.exports = (tree, cb) => {
-    var template
+    var template, rstream
     try {
         template = require(
             path(__dirname, 'templates', tree.source)
@@ -36,5 +36,9 @@ module.exports = (tree, cb) => {
             exception: err
         })
     }
-    file(tree, cb, fs.createWriteStream(tree.destination).write(template))
+    rstream = new stream()
+    rstream._read = () => {}
+    rstream.push(template)
+    rstream.push()
+    file(tree, cb, rstream)
 }
