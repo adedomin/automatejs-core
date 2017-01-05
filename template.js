@@ -25,7 +25,7 @@ var fs = require('fs'),
     waterfall = require('async.waterfall')
 
 module.exports = (tree, cb) => {
-    var template, rstream
+    var template
     try {
         template = require(
             path.join(__dirname, 'templates', tree.source)
@@ -37,8 +37,6 @@ module.exports = (tree, cb) => {
             exception: err
         })
     }
-
-    rstream.push(template)
 
     waterfall([(next) => {
         if (!tree.mkdir) return next()
