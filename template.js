@@ -42,13 +42,10 @@ module.exports = (tree, cb) => {
         if (!tree.mkdir) return next()
         mkdirp(path.dirname(tree.destination), next)
     }, (next) => {
-        var fpipe
-        fpipe = fs.createWriteStream(
+        fs.createWriteStream(
             tree.destination,
-            { mode: parseInt(tree.mode, 8) }
-        ).write(template)
-        fpipe.on('error', next)
-        fpipe.on('finish', next)
+            { mode: parseInt(tree.mode, 8) || 0o0666 }
+        ).write(template, next)
     }, (next) => {
         if (!tree.owner) return next()
         if (!+tree.owner) return next('must provide a uid, username is not supported')
