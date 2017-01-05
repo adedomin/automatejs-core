@@ -23,6 +23,12 @@ var spawn = require('child_process').exec
 
 module.exports = (args, cb) => {
 
+    if (typeof args === 'string') {
+        args = {
+            command: args
+        }
+    }
+
     var out = '', 
         err = '',
         timedout = false,

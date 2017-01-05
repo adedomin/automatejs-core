@@ -36,6 +36,7 @@ module.exports = (tree, cb) => {
             exception: err
         })
     }
+
     rstream = new stream()
     rstream._read = () => {}
     rstream.push(template)
