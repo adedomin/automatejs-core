@@ -34,17 +34,17 @@ module.exports = (tree, cb, template) => {
         mkdirp(path.dirname(actualdest), next)
     }, (next) => {
         var fpipe
-        if (!tree.mode || !parseInt(tree.mode, 8)) {
+        if (template) {
+            template.pipe(
+                fs.createWriteStream(actualdest),
+                { mode: parseInt(tree.mode, 8) }
+            )
+        }
+        else if (!tree.mode || !parseInt(tree.mode, 8)) {
             fpipe = fs.createReadStream(
                 path.join(__dirname, 'files', tree.source)
             ).pipe(
                 fs.createWriteStream(actualdest)
-            )
-        }
-        else if (template) {
-            template.pipe(
-                fs.createWriteStream(actualdest),
-                { mode: parseInt(tree.mode, 8) }
             )
         }
         else {
