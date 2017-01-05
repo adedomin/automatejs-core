@@ -40,5 +40,8 @@ module.exports = (tree, cb) => {
     rstream._read = () => {}
     rstream.push(template)
     rstream.push()
-    file(tree, cb, rstream)
+    file(tree, (err) => {
+        if (err) return cb(err, { status: 'error', exception: err }) 
+        cb(null, { status: 'successfully wrote template to file' })
+    }, rstream)
 }
